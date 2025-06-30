@@ -1,0 +1,5 @@
+package com.example.PortoQuant.DataModels;
+
+public class Assets {
+
+}

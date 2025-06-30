@@ -1,0 +1,21 @@
+package com.example.PortoQuant.Assets;
+
+import java.util.ArrayList;
+
+public class Crypto extends Asset{
+
+	ArrayList<String> bonds;
+
+	@Override
+	void calculateExpectedReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void calculateVolatility() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

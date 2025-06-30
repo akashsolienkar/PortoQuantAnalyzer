@@ -1,0 +1,77 @@
+package com.example.PortoQuant.GarchModel;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Implements a basic GARCH(1,1) model to estimate time-varying volatility (σₜ).
+ */
+public class GarchModel {
+
+    private final double omega;  // Long-term variance constant
+    private final double alpha;  // ARCH parameter (shock sensitivity)
+    private final double beta;   // GARCH parameter (volatility persistence)
+
+    public GarchModel(double omega, double alpha, double beta) {
+        if (alpha + beta >= 1.0) {
+            throw new IllegalArgumentException("GARCH model must satisfy: alpha + beta < 1 for stationarity.");
+        }
+        this.omega = omega;
+        this.alpha = alpha;
+        this.beta = beta;
+    }
+
+    /**
+     * Estimates a time series of volatility (σₜ) given historical log returns (εₜ).
+     * @param logReturns Historical return residuals (daily log returns)
+     * @return List of estimated σₜ (standard deviation) for each t
+     */
+    public List<Double> estimateVolatility(List<Double> logReturns) {
+        List<Double> sigmaSeries = new ArrayList<>();
+        if (logReturns == null || logReturns.size() < 2) return sigmaSeries;
+
+        double initialVariance = calculateSampleVariance(logReturns);
+        double prevVariance = initialVariance;
+
+        for (int t = 1; t < logReturns.size(); t++) {
+            double epsilonSquared = Math.pow(logReturns.get(t - 1), 2);
+            double variance = omega + alpha * epsilonSquared + beta * prevVariance;
+            double sigma = Math.sqrt(variance);
+
+            sigmaSeries.add(sigma);
+            prevVariance = variance;
+        }
+
+        return sigmaSeries;
+    }
+
+    private double calculateSampleVariance(List<Double> values) {
+        double mean = values.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double sumSq = 0.0;
+        for (double v : values) {
+            sumSq += Math.pow(v - mean, 2);
+        }
+        return sumSq / values.size();
+    }
+    
+    public void runGarch(List<Double> prices)
+    {
+    	
+    	
+    	List<Double> logReturns = new ArrayList<>();
+    	for (int i = 1; i < prices.size(); i++) {
+    	    if (prices.get(i - 1) > 0 && prices.get(i) > 0) {
+    	        double r = Math.log(prices.get(i) / prices.get(i - 1));
+    	        logReturns.add(r);
+    	    }
+    	}
+
+    	// Step 2: Create and run the GARCH model
+    	GarchModel garch = new GarchModel(0.00001, 0.1, 0.85);
+    	List<Double> sigmaSeries = garch.estimateVolatility(logReturns);
+
+    	// Step 3: Plug into your GBM simulator
+    	VolatilityModel volatilityModel = new GarchVolatilityModel(sigmaSeries);
+
+    }
+
+}

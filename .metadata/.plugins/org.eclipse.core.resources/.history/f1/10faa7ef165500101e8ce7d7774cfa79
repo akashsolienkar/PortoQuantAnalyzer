@@ -1,0 +1,32 @@
+package com.example.PortoQuant.Executor;
+
+import java.util.List;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation;
+
+public class SimulateMCStocks 
+{
+
+	public void runSimulations(List<Asset> p)
+	{
+		MultiGBMSimulation simulator = new MultiGBMSimulation();
+		int numPaths = 100_000;              // Total number of simulation paths
+        int steps = 252;                     // Time steps (252 trading days in a year)
+		for(Asset asset : p)
+		{
+			
+			MultiGBMSimulation.MonteCarloTask rootTask = new MultiGBMSimulation.MonteCarloTask(0, numPaths, 1000,asset.getExpectedReturn(), asset.getVolatility(), 1, steps);
+	        double[] finalOutcomes = pool.invoke(rootTask); // Kick off the Fork/Join simulation
+
+	        long end = System.currentTimeMillis();
+	        System.out.printf("\n✅ Simulated %,d paths using Fork/Join in %.2f seconds%n", numPaths, (end - start) / 1000.0);
+
+	        // Compute and display risk metrics
+	        computeRiskMetrics(finalOutcomes, 0.95, S0);
+
+		}
+		}
+
+}

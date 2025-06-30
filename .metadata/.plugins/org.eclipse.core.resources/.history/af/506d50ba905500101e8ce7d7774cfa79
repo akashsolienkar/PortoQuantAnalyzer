@@ -1,0 +1,5 @@
+package com.example.PortoQuant.analyticalModels;
+
+public class ContstantVoliatlityModel implements volitalityModel{
+
+}

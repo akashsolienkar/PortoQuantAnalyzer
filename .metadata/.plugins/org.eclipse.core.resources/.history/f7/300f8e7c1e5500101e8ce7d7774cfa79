@@ -1,0 +1,83 @@
+package com.example.PortoQuant.DataModels;
+
+import java.util.Arrays;
+
+public class SimulationResult {
+
+    private double valueAtRisk;              // 5th percentile loss
+    private double expectedShortfall;        // Mean loss beyond VaR
+    private double probabilityOfBankruptcy;  // % paths below zero
+    private double volatility;               // Std. deviation of final values
+
+    public SimulationResult(double valueAtRisk, double expectedShortfall, double probabilityOfBankruptcy, double volatility) {
+        this.valueAtRisk = valueAtRisk;
+        this.expectedShortfall = expectedShortfall;
+        this.probabilityOfBankruptcy = probabilityOfBankruptcy;
+        this.volatility = volatility;
+    }
+
+    public double getValueAtRisk() {
+        return valueAtRisk;
+    }
+
+    public double getExpectedShortfall() {
+        return expectedShortfall;
+    }
+
+    public double getProbabilityOfBankruptcy() {
+        return probabilityOfBankruptcy;
+    }
+
+    public double getVolatility() {
+        return volatility;
+    }
+    
+    /**
+     * Calculates financial risk metrics from the simulated portfolio outcomes.
+     *
+     * @param outcomes        array of final simulated portfolio values
+     * @param confidenceLevel confidence level for VaR and Expected Shortfall (e.g. 0.95)
+     * @param S0              initial portfolio value
+     */
+    public void computeRiskMetrics(double[] outcomes, double confidenceLevel, double S0) {
+        Arrays.sort(outcomes); // Sort outcomes for percentile-based risk metrics
+
+        // Final average value across all simulations
+        double mean = Arrays.stream(outcomes).average().orElse(0.0);
+
+        // Portfolio volatility (standard deviation)
+        double stdDev = Math.sqrt(Arrays.stream(outcomes)
+                .map(x -> Math.pow(x - mean, 2))
+                .average().orElse(0.0));
+
+        // Value at Risk (VaR): how much loss to expect in the worst (1 - confidence) % of cases
+        double var = outcomes[(int) ((1 - confidenceLevel) * outcomes.length)];
+
+        // Expected Shortfall: average of losses worse than the VaR
+        double expectedShortfall = Arrays.stream(outcomes)
+                .limit((int) ((1 - confidenceLevel) * outcomes.length))
+                .average().orElse(0.0);
+
+        // Probability of Bankruptcy: percentage of paths where portfolio went to zero or below
+        long bankrupt = Arrays.stream(outcomes).filter(v -> v <= 0).count();
+
+        // Print computed metrics
+        System.out.println("\n📈 Risk Metrics:");
+        System.out.printf("📊 Final Mean Portfolio Value: ₹%.2f%n", mean);
+        System.out.printf("📉 Portfolio Volatility: %.2f%%%n", (stdDev / mean) * 100);
+        System.out.printf("💥 Value at Risk (%.0f%%): ₹%.2f%n", confidenceLevel * 100, S0 - var);
+        System.out.printf("🛑 Expected Shortfall: ₹%.2f%n", S0 - expectedShortfall);
+        System.out.printf("⚠️  Probability of Bankruptcy: %.4f%%%n", 100.0 * bankrupt / outcomes.length);
+    }
+
+
+    @Override
+    public String toString() {
+        return "SimulationResult{" +
+                "valueAtRisk=" + valueAtRisk +
+                ", expectedShortfall=" + expectedShortfall +
+                ", probabilityOfBankruptcy=" + probabilityOfBankruptcy +
+                ", volatility=" + volatility +
+                '}';
+    }
+}

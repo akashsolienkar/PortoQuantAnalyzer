@@ -1,0 +1,16 @@
+package com.example.PortoQuant.Executor;
+
+import com.example.PortoQuant.DataModels.Portfolio;
+
+public class QuantExecutor
+{
+
+	public void runSimulations(Portfolio p)
+	{
+		for(Asset asset : p.getAssets())
+		{
+			
+		}
+		
+	}
+}

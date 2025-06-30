@@ -1,0 +1,11 @@
+package com.example.PortoQuant.analyticalModels;
+
+public class TimeVaryingVolitality implements volitalityModel {
+
+	@Override
+	public double getValue(int timeStep) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

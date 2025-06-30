@@ -1,0 +1,6 @@
+package com.example.PortoQuant.Assets;
+
+public class Bonds extends Asset{
+
+	final String assetName;
+}

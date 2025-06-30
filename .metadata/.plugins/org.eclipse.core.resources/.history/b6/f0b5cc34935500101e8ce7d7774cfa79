@@ -1,0 +1,30 @@
+package com.example.PortoQuant.Executor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.Assets.MutualFunds;
+import com.example.PortoQuant.Assets.Stocks;
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.analyticalModels.ContstantVoliatlityModel;
+
+public class MainApplication 
+{
+	public static void main(String[] args) 
+	{
+		QuantExecutor Q=new QuantExecutor();
+		List<Asset> assets= new ArrayList<Asset>();
+		assets.add(new Stocks(10000));
+		assets.add(new MutualFunds(10000));
+		assets.get(0).setExpectedReturn(0.2);
+		assets.get(0).setVolatility(new ContstantVoliatlityModel(0.8));
+		assets.get(1).setExpectedReturn(new ContstantVoliatlityModel(0.8));
+		assets.get(1).setVolatility(new ContstantVoliatlityModel(0.8));
+		Portfolio p=new Portfolio(20000, 1, 100000, assets);
+		Q.runSimulations(p);
+	
+	}
+
+
+}

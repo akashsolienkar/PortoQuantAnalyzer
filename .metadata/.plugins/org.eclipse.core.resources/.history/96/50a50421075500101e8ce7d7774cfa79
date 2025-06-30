@@ -1,0 +1,32 @@
+package com.example.PortoQuant.HistoricalData;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import yahoofinance.YahooFinance;
+import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.histquotes.Interval;
+
+public class MarketDataSerivce
+{
+
+	public List<Double> getHistoricalPrices(String ticker, int yearsBack) throws Exception {
+        Calendar from = Calendar.getInstance();
+        from.add(Calendar.YEAR, -yearsBack);
+        Calendar to = Calendar.getInstance();
+
+        List<HistoricalQuote> history = YahooFinance.get(ticker).getHistory(from, to, Interval.DAILY);
+        List<Double> prices = new ArrayList<>();
+
+        for (HistoricalQuote quote : history) {
+            BigDecimal close = quote.getClose();
+            if (close != null) {
+                prices.add(close.doubleValue());
+            }
+        }
+
+        return prices;
+    }
+}

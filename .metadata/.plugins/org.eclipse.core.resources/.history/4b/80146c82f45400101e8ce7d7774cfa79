@@ -1,0 +1,59 @@
+package com.example.PortoQuant.DataModels;
+public class Asset {
+
+
+	public enum AssetType {
+	    STOCK,
+	    BOND,
+	    CASH,
+	    MUTUAL_FUND,
+	    COMMODITY,
+	    REAL_ESTATE,
+	    CRYPTO
+	}
+
+    private String name;                // e.g., "Apple", "Bitcoin"
+    private AssetType type;
+    private double allocation;          // % of portfolio (e.g., 0.25 = 25%)
+    private double expectedReturn;      // Annual expected return (e.g., 0.08 = 8%)
+    private double volatility;          // Std. dev. of returns (e.g., 0.2 = 20%)
+
+    public Asset(String name, AssetType type, double allocation, double expectedReturn, double volatility) {
+        this.name = name;
+        this.type = type;
+        this.allocation = allocation;
+        this.expectedReturn = expectedReturn;
+        this.volatility = volatility;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public AssetType getType() {
+        return type;
+    }
+
+    public double getAllocation() {
+        return allocation;
+    }
+
+    public double getExpectedReturn() {
+        return expectedReturn;
+    }
+
+    public double getVolatility() {
+        return volatility;
+    }
+
+    @Override
+    public String toString() {
+        return "Asset{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", allocation=" + allocation +
+                ", expectedReturn=" + expectedReturn +
+                ", volatility=" + volatility +
+                '}';
+    }
+}

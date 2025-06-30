@@ -1,0 +1,30 @@
+package com.example.PortoQuant.Assets;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class Commoditiy extends Asset{
+
+	HashMap<String,Integer> comodities;
+	
+	
+	public Commoditiy() {
+		super(Asset.AssetType.COMMODITY.toString(), Asset.AssetType.COMMODITY);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	
+
+	@Override
+	void calculateExpectedReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void calculateVolatility() {
+		// TODO Auto-generated method stub
+		
+	}
+}

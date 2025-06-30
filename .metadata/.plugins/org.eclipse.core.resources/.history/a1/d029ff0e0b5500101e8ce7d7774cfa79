@@ -1,0 +1,13 @@
+package com.example.PortoQuant.HistoricalData;
+
+public class BondsDataServices {
+	
+	public void getHistoricalData()
+	{
+		URL url = new URL("https://www.amfiindia.com/spages/NAVAll.txt");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+
+	}
+
+
+}

@@ -1,0 +1,15 @@
+package com.example.PortoQuant.HistoricalData;
+
+public class BondsDataService {
+
+	public double[] estimate(String bondCode) {
+        return switch (bondCode.toUpperCase()) {
+            case "GSEC_10Y" : new double[]{0.072, 0.01};    // 7.2% return, 1% vol
+            case "CORP_AAA" : new double[]{0.085, 0.015};   // 8.5% return, 1.5% vol
+            case "CORP_BBB" : new double[]{0.10,  0.03};    // 10% return, 3% vol
+            case "T-BILL_91D" : new double[]{0.062, 0.005}; // 6.2% return, 0.5% vol
+            default : new double[]{0.06, 0.02};              // fallback: conservative
+        };
+    }
+}
+

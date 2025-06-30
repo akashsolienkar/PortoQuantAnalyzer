@@ -1,0 +1,44 @@
+package com.example.PortoQuant.DataModels;
+
+package simulation.model;
+
+public class SimulationResult {
+
+    private double valueAtRisk;              // 5th percentile loss
+    private double expectedShortfall;        // Mean loss beyond VaR
+    private double probabilityOfBankruptcy;  // % paths below zero
+    private double volatility;               // Std. deviation of final values
+
+    public SimulationResult(double valueAtRisk, double expectedShortfall, double probabilityOfBankruptcy, double volatility) {
+        this.valueAtRisk = valueAtRisk;
+        this.expectedShortfall = expectedShortfall;
+        this.probabilityOfBankruptcy = probabilityOfBankruptcy;
+        this.volatility = volatility;
+    }
+
+    public double getValueAtRisk() {
+        return valueAtRisk;
+    }
+
+    public double getExpectedShortfall() {
+        return expectedShortfall;
+    }
+
+    public double getProbabilityOfBankruptcy() {
+        return probabilityOfBankruptcy;
+    }
+
+    public double getVolatility() {
+        return volatility;
+    }
+
+    @Override
+    public String toString() {
+        return "SimulationResult{" +
+                "valueAtRisk=" + valueAtRisk +
+                ", expectedShortfall=" + expectedShortfall +
+                ", probabilityOfBankruptcy=" + probabilityOfBankruptcy +
+                ", volatility=" + volatility +
+                '}';
+    }
+}

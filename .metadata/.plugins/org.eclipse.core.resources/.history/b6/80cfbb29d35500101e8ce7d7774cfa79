@@ -1,0 +1,147 @@
+package com.example.PortoQuant.Simulation;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
+
+import com.example.PortoQuant.DataModels.SimulationResult;
+import com.example.PortoQuant.analyticalModels.ExpectedReturnModel;
+import com.example.PortoQuant.analyticalModels.volitalityModel;
+
+/**
+ * Monte Carlo Simulation for Portfolio Risk Analysis using Java Fork/Join Framework.
+ * This program simulates thousands of possible future portfolio outcomes using
+ * Geometric Brownian Motion (GBM) and computes risk metrics such as:
+ * - Value at Risk (VaR)
+ * - Expected Shortfall
+ * - Portfolio Volatility
+ * - Probability of Bankruptcy
+ */
+public class MultiGBMSimulation {
+
+    public double[] simulate( int numPaths,int steps,double S0,ExpectedReturnModel mu,volitalityModel sigma, double T)
+    {
+//        int numPaths = 100_000;              // Total number of simulation paths
+//        int steps = 252;                     // Time steps (252 trading days in a year)
+//        double S0 = 1000;                    // Initial portfolio value
+//        double mu = 0.08;                    // Expected annual return
+//        double sigma = 0.2;                  // Annual volatility
+//        double T = 1.0;                      // Time horizon in years
+
+        long start = System.currentTimeMillis();
+
+        // ForkJoinPool leverages all CPU cores for parallel processing
+        ForkJoinPool pool = new ForkJoinPool();
+
+        // Create the root task to start simulation
+        MonteCarloTask rootTask = new MonteCarloTask(0, numPaths, S0, mu, sigma, T, steps);
+        double[] finalOutcomes = pool.invoke(rootTask); // Kick off the Fork/Join simulation
+
+        long end = System.currentTimeMillis();
+        System.out.printf("\n Simulated %,d paths using Fork/Join in %.2f seconds%n", numPaths, (end - start) / 1000.0);
+
+        // Compute and display risk metrics
+        computeRiskMetrics(finalOutcomes, 0.95, S0);
+       return finalOutcomes;
+//    		   computeRiskMetrics(finalOutcomes, 0.95, S0);
+    }
+
+    /**
+     * Recursive task for simulating a subset of paths using Geometric Brownian Motion.
+     * Automatically splits into smaller tasks based on a predefined threshold.
+     */
+    public static class MonteCarloTask extends RecursiveTask<double[]> {
+        private static final int THRESHOLD = 1000000;  // Threshold to decide task splitting
+        private int start, end, steps;
+        private double S0, T;
+        volitalityModel sigma;
+        ExpectedReturnModel mu;
+        
+        public MonteCarloTask(int start, int end, double S0, ExpectedReturnModel mu, volitalityModel sigma, double T, int steps) {
+            this.start = start;
+            this.end = end;
+            this.S0 = S0;
+            this.mu = mu;
+            this.sigma = sigma;
+            this.T = T;
+            this.steps = steps;
+        }
+
+        @Override
+        protected double[] compute() {
+            if (end - start <= THRESHOLD) {
+                // Base case: simulate the paths directly
+                double[] outcomes = new double[end - start];
+                Random rand = new Random();
+                double dt = T / steps; // Time step size
+
+                for (int i = 0; i < outcomes.length; i++) {
+                    double value = S0;
+                    for (int t = 0; t < steps; t++) {
+                        double z = rand.nextGaussian(); // Random shock
+                        // Apply GBM step
+                        value *= Math.exp((mu.getValue(i) - 0.5 * sigma.getValue(i) * sigma.getValue(i)) * dt + sigma.getValue(i) * Math.sqrt(dt) * z);
+                    }
+                    outcomes[i] = value;
+                }
+                return outcomes;
+
+            } else {
+                // Recursive case: split task into two subtasks
+                int mid = (start + end) / 2;
+                MonteCarloTask left = new MonteCarloTask(start, mid, S0, mu, sigma, T, steps);
+                MonteCarloTask right = new MonteCarloTask(mid, end, S0, mu, sigma, T, steps);
+                invokeAll(left, right); // Run subtasks in parallel
+
+                // Merge results from subtasks
+                double[] leftResult = left.join();
+                double[] rightResult = right.join();
+                double[] combined = new double[leftResult.length + rightResult.length];
+                System.arraycopy(leftResult, 0, combined, 0, leftResult.length);
+                System.arraycopy(rightResult, 0, combined, leftResult.length, rightResult.length);
+                return combined;
+            }
+        }
+    }
+
+    /**
+     * Calculates financial risk metrics from the simulated portfolio outcomes.
+     *
+     * @param outcomes        array of final simulated portfolio values
+     * @param confidenceLevel confidence level for VaR and Expected Shortfall (e.g. 0.95)
+     * @param S0              initial portfolio value
+     */
+    public SimulationResult computeRiskMetrics(double[] outcomes, double confidenceLevel, double S0) {
+        Arrays.sort(outcomes); // Sort outcomes for percentile-based risk metrics
+
+        // Final average value across all simulations
+        double mean = Arrays.stream(outcomes).average().orElse(0.0);
+
+        // Portfolio volatility (standard deviation)
+        double stdDev = Math.sqrt(Arrays.stream(outcomes)
+                .map(x -> Math.pow(x - mean, 2))
+                .average().orElse(0.0));
+
+        // Value at Risk (VaR): how much loss to expect in the worst (1 - confidence) % of cases
+        double var = outcomes[(int) ((1 - confidenceLevel) * outcomes.length)];
+
+        // Expected Shortfall: average of losses worse than the VaR
+        double expectedShortfall = Arrays.stream(outcomes)
+                .limit((int) ((1 - confidenceLevel) * outcomes.length))
+                .average().orElse(0.0);
+
+        // Probability of Bankruptcy: percentage of paths where portfolio went to zero or below
+        long bankrupt = Arrays.stream(outcomes).filter(v -> v <= 0).count();
+
+        // Print computed metrics
+        System.out.println("\n📈 Risk Metrics:");
+        System.out.printf("📊 Final Mean Portfolio Value: ₹%.2f%n", mean);
+        System.out.printf("📉 Portfolio Volatility: %.2f%%%n", (stdDev / mean) * 100);
+        System.out.printf("💥 Value at Risk (%.0f%%): ₹%.2f%n", confidenceLevel * 100, S0 - var);
+        System.out.printf("🛑 Expected Shortfall: ₹%.2f%n", S0 - expectedShortfall);
+        System.out.printf("⚠️  Probability of Bankruptcy: %.4f%%%n", 100.0 * bankrupt / outcomes.length);
+        
+        return new SimulationResult(var, S0 - expectedShortfall,  100.0 * bankrupt / outcomes.length, (stdDev / mean) * 100);
+    }
+}

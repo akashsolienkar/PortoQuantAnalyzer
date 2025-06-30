@@ -1,0 +1,49 @@
+package com.example.PortoQuant.Executor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.Assets.MutualFunds;
+import com.example.PortoQuant.Assets.Stocks;
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation.MonteCarloTask;
+
+public class QuantExecutor
+{
+
+	public void runSimulations(Portfolio p)
+	{
+		ExecutorService s=Executors.newFixedThreadPool(p.getAssets().size());
+		MultiGBMSimulation simulator = new MultiGBMSimulation();
+		int numPaths = p.getNumberOfSimulations();              // Total number of simulation paths
+        int steps = 252;                     // Time steps (252 trading days in a year)
+        List<AList<>> s;
+		for(Asset asset : p.getAssets())
+		{
+			s.submit(()->simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1));
+//			int numPaths,int steps,double S0,double mu,double sigma, double T
+			
+		}
+		s.shutdown();
+		
+	}
+//	public static void main(String[] args) 
+//	{
+//		QuantExecutor Q=new QuantExecutor();
+//		List<Asset> assets= new ArrayList<Asset>();
+//		assets.add(new Stocks(10000));
+//		assets.add(new MutualFunds(10000));
+//		assets.get(0).setExpectedReturn(0.2);
+//		assets.get(0).setVolatility(0.8);
+//		assets.get(1).setExpectedReturn(0.2);
+//		assets.get(1).setVolatility(0.8);
+//		Portfolio p=new Portfolio(20000, 1, 100000, assets);
+//		Q.runSimulations(p);
+//	
+//	}
+	
+}

@@ -1,0 +1,29 @@
+# Java
+*.class
+*.jar
+*.war
+*.log
+*.iml
+
+# Maven
+target/
+
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+*.iws
+*.ipr
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+

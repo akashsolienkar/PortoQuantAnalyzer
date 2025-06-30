@@ -1,0 +1,22 @@
+package com.example.PortoQuant.analyticalModels;
+
+import java.util.List;
+
+public class TimeVaryingExpectedReturnModel implements ExpectedReturnModel {
+
+	double[] expectedReturn;
+	
+	
+	public TimeVaryingExpectedReturnModel(double[] expectedReturn) {
+		super();
+		this.expectedReturn = expectedReturn;
+	}
+
+
+	@Override
+	public double getValue(int timeStep) {
+		// TODO Auto-generated method stub
+		return expectedReturn[timeStep];
+	}
+
+}

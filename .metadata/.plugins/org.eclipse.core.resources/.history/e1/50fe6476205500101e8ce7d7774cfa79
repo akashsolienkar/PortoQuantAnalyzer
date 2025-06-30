@@ -1,0 +1,27 @@
+package com.example.PortoQuant.Executor;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation.MonteCarloTask;
+
+public class QuantExecutor
+{
+
+	public void runSimulations(Portfolio p)
+	{
+		MultiGBMSimulation simulator = new MultiGBMSimulation();
+		int numPaths = 100_000;              // Total number of simulation paths
+        int steps = 252;                     // Time steps (252 trading days in a year)
+		for(Asset asset : p.getAssets())
+		{
+			simulator.simulate(0, numPaths, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getTotalPrice(), 1);
+	      
+	        // Compute and display risk metrics
+			simulator.computeRiskMetrics(finalOutcomes, 0.95, S0);
+
+			
+		}
+		
+	}
+}

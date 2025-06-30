@@ -1,0 +1,18 @@
+package com.example.PortoQuant.Assets;
+
+import java.util.ArrayList;
+
+public class Bonds extends Asset{
+
+	public Bonds() {
+		double allocation;
+		double expectedReturn; 
+		double volatility;
+		super(AssetType.BOND, allocation, expectedReturn, volatility);
+		// TODO Auto-generated constructor stub
+		
+		 
+	}
+
+	ArrayList<String> Assets;
+}

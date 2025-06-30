@@ -1,0 +1,76 @@
+package com.example.PortoQuant.calculations.returnEstimations;
+
+package com.qantcast.simulation.estimator;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+public class MutualFundsReturnEstimator {
+
+    public static class NAVData {
+        private final LocalDate date;
+        private final double nav;
+
+        public NAVData(LocalDate date, double nav) {
+            this.date = date;
+            this.nav = nav;
+        }
+
+        public LocalDate getDate() {
+            return date;
+        }
+
+        public double getNav() {
+            return nav;
+        }
+    }
+
+    /**
+     * Estimate CAGR (Compounded Annual Growth Rate) from mutual fund NAV data.
+     *
+     * @param navHistory List of NAVs sorted from oldest to latest.
+     * @return CAGR as decimal (e.g., 0.12 means 12% annual return).
+     */
+    public double estimateCAGRFromNAV(List<NAVData> navHistory) {
+        if (navHistory == null || navHistory.size() < 2) {
+            throw new IllegalArgumentException("At least two NAV records required.");
+        }
+
+        NAVData start = navHistory.get(0);
+        NAVData end = navHistory.get(navHistory.size() - 1);
+
+        double navStart = start.getNav();
+        double navEnd = end.getNav();
+
+        long days = ChronoUnit.DAYS.between(start.getDate(), end.getDate());
+        double years = days / 365.0;
+
+        if (years <= 0 || navStart <= 0) {
+            throw new IllegalArgumentException("Invalid NAV dates or values.");
+        }
+
+        return Math.pow(navEnd / navStart, 1.0 / years) - 1;
+    }
+
+    /**
+     * Estimate simple return over the period.
+     *
+     * @param navHistory List of NAVs sorted from oldest to latest.
+     * @return Simple return as decimal (e.g., 0.10 = 10% total return).
+     */
+    public double estimateSimpleReturn(List<NAVData> navHistory) {
+        if (navHistory == null || navHistory.size() < 2) {
+            throw new IllegalArgumentException("At least two NAV records required.");
+        }
+
+        double navStart = navHistory.get(0).getNav();
+        double navEnd = navHistory.get(navHistory.size() - 1).getNav();
+
+        if (navStart <= 0) {
+            throw new IllegalArgumentException("Starting NAV must be positive.");
+        }
+
+        return (navEnd - navStart) / navStart;
+    }
+}

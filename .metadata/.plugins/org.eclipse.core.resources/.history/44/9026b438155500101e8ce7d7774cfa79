@@ -1,0 +1,20 @@
+package com.example.PortoQuant.Executor;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.DataModels.Portfolio;
+
+public class QuantExecutor
+{
+
+	public void runSimulations(Portfolio p)
+	{
+		MultiGBMSimulation simulator = new MultiGBMSimulation();
+		
+		for(Asset asset : p.getAssets())
+		{
+			
+			
+		}
+		
+	}
+}

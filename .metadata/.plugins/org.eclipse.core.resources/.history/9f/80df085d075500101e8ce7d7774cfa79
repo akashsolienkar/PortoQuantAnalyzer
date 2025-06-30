@@ -1,0 +1,35 @@
+package com.example.PortoQuant.Assets;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.PortoQuant.HistoricalData.MarketDataSerivce;
+
+public class Stocks extends Asset{
+
+	ArrayList<String> stocks;
+
+	@Override
+	void calculateExpectedReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void calculateVolatility() {
+		// TODO Auto-generated method stub
+		
+		MarketDataSerivce service = new MarketDataSerivce();
+
+		for (Asset asset : stocks) {
+		    List<Double> prices = service.getHistoricalPrices(asset.getTicker(), 1); // 1 year back
+
+		    // Estimate μ and σ from prices
+		    double[] stats = ReturnEstimator.estimateFromPrices(prices, asset.getType());
+
+		    asset.setMu(stats[0]);
+		    asset.setSigma(stats[1]);
+		}
+	}
+
+}
