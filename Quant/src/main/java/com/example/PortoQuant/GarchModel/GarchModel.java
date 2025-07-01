@@ -10,14 +10,31 @@ public class GarchModel {
     private final double omega;  // Long-term variance constant
     private final double alpha;  // ARCH parameter (shock sensitivity)
     private final double beta;   // GARCH parameter (volatility persistence)
-
-    public GarchModel(double omega, double alpha, double beta) {
+    private static GarchModel instance=null;
+    
+    private GarchModel(double omega, double alpha, double beta) {
         if (alpha + beta >= 1.0) {
             throw new IllegalArgumentException("GARCH model must satisfy: alpha + beta < 1 for stationarity.");
         }
         this.omega = omega;
         this.alpha = alpha;
         this.beta = beta;
+    }
+    
+   public static GarchModel getInstance()
+    {
+    	if(instance ==null)
+    		instance= new GarchModel(0.00001, 0.1, 0.85);
+		return instance;
+    	
+    }
+   
+   static GarchModel getNewInstance(double omega, double alpha, double beta)
+    {
+    	
+    		instance= new GarchModel(omega,alpha, beta);
+    		return instance;
+    	
     }
 
     /**
@@ -53,7 +70,7 @@ public class GarchModel {
         return sumSq / values.size();
     }
     
-    public void runGarch(List<Double> prices)
+    public List<Double> runGarch(List<Double> prices)
     {
     	
     	
@@ -67,7 +84,9 @@ public class GarchModel {
 
     	// Step 2: Create and run the GARCH model
     	GarchModel garch = new GarchModel(0.00001, 0.1, 0.85);
-    	List<Double> sigmaSeries = garch.estimateVolatility(logReturns);
+    	List<Double> sigmaSeries = estimateVolatility(logReturns);
+ 
+    	return sigmaSeries;
 
 //    	// Step 3: Plug into your GBM simulator
 //    	VolatilityModel volatilityModel = new GarchVolatilityModel(sigmaSeries);

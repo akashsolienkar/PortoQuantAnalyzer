@@ -9,6 +9,7 @@ import java.util.List;
 
 public class MutualFundService {
 	
+	@Deprecated
 	public void getHistoricalData() throws IOException
 	{
 		URL url = new URL("https://www.amfiindia.com/spages/NAVAll.txt");

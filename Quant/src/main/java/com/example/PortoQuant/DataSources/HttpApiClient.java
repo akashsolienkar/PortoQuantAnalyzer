@@ -1,0 +1,94 @@
+package com.example.PortoQuant.DataSources;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+
+public class HttpApiClient {
+
+    private final String url;
+    private final String method;
+    private final int connectTimeout;
+    private final int readTimeout;
+    private final Map<String, String> headers;
+
+    private HttpApiClient(Builder builder) {
+        this.url = builder.url;
+        this.method = builder.method;
+        this.connectTimeout = builder.connectTimeout;
+        this.readTimeout = builder.readTimeout;
+        this.headers = builder.headers;
+    }
+
+    public String execute() throws Exception {
+        URL urlObj = new URL(this.url);
+        HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
+
+        conn.setRequestMethod(this.method);
+        conn.setConnectTimeout(this.connectTimeout);
+        conn.setReadTimeout(this.readTimeout);
+
+        // Add headers if any
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                conn.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new RuntimeException("Failed : HTTP error code : " + responseCode);
+        }
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder content = new StringBuilder();
+        String line;
+
+        while ((line = in.readLine()) != null) {
+            content.append(line);
+        }
+
+        in.close();
+        conn.disconnect();
+        return content.toString();
+    }
+
+    // 🔧 Builder class
+    public static class Builder {
+        private String url;
+        private String method = "GET";
+        private int connectTimeout = 5000;
+        private int readTimeout = 5000;
+        private Map<String, String> headers;
+
+        public Builder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder method(String method) {
+            this.method = method;
+            return this;
+        }
+
+        public Builder connectTimeout(int timeout) {
+            this.connectTimeout = timeout;
+            return this;
+        }
+
+        public Builder readTimeout(int timeout) {
+            this.readTimeout = timeout;
+            return this;
+        }
+
+        public Builder headers(Map<String, String> headers) {
+            this.headers = headers;
+            return this;
+        }
+
+        public HttpApiClient build() {
+            return new HttpApiClient(this);
+        }
+    }
+}

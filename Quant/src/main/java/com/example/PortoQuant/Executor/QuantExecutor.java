@@ -27,13 +27,15 @@ public class QuantExecutor
         
 		for(Asset asset : p.getAssets())
 		{
+			asset.calculateVolatility();
+			asset.calculateExpectedReturn();
 			futureAsset.put(asset,
 					s.submit(()->
 					simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1)));
 //			s.submit(()->simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1));
 		}
 		
-
+		
 		 double[] finalPortfolioValues = new double[p.getNumberOfSimulations()];
 //		 Map<Asset,Future<double[]>> assetListOutcomes = new ConcurrentHashMap<>();
 

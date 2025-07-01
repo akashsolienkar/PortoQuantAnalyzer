@@ -15,14 +15,17 @@ public class Bonds extends Asset{
 	
 
 	@Override
+	public
 	void calculateExpectedReturn() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
+	public
 	void calculateVolatility() {
 		// TODO Auto-generated method stub
 		
 	}
+	
 }

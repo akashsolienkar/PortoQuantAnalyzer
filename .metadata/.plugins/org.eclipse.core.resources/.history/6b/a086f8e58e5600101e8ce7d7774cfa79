@@ -1,0 +1,67 @@
+package com.example.PortoQuant.Executor;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import com.example.PortoQuant.Assets.Asset;
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.Simulation.MultiGBMSimulation;
+
+
+public class QuantExecutor
+{
+
+	public void runSimulations(Portfolio p) throws InterruptedException, ExecutionException
+	{
+		ExecutorService s=Executors.newFixedThreadPool(p.getAssets().size());
+		MultiGBMSimulation simulator = new MultiGBMSimulation();
+		int numPaths = p.getNumberOfSimulations();              // Total number of simulation paths
+        int steps = 252;                     // Time steps (252 trading days in a year)
+ 
+        Map<Asset,Future<double[]>> futureAsset = new ConcurrentHashMap<>();
+        
+		for(Asset asset : p.getAssets())
+		{
+			
+			futureAsset.put(asset,
+					(Future<double[]>) s.submit(()->{
+						asset.calculateVolatility();
+						asset.calculateExpectedReturn();
+					simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1);});
+//			s.submit(()->simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1));
+		}
+		
+		
+		 double[] finalPortfolioValues = new double[p.getNumberOfSimulations()];
+//		 Map<Asset,Future<double[]>> assetListOutcomes = new ConcurrentHashMap<>();
+
+		 long start = System.currentTimeMillis();
+	        for (int i = 0; i < p.getNumberOfSimulations(); i++) 
+	        {
+	            double total = 0.0;
+
+	            for (Entry<Asset, Future<double[]>> asset : futureAsset.entrySet()) {
+	                double finalPrice = asset.getValue().get()[i];
+//	                double shares = asset.getKey().getTotalPrice() / p.getTotalValue();
+	                total +=  finalPrice;
+	                
+//	                System.out.println("finalPrice -"+finalPrice);
+//	                System.out.println("shares-"+shares);
+//	                System.out.println("total-"+total);
+	            }
+
+	            finalPortfolioValues[i]=total;
+	        }
+	        
+	        simulator.computeRiskMetrics(finalPortfolioValues, 0.95, p.getTotalValue());
+	        System.out.printf("\n Executed %,d GBM for portfolio in %.2f seconds%n", numPaths, (System.currentTimeMillis() - start) / 1000.0);
+		
+		s.shutdown();
+		
+	}	
+}

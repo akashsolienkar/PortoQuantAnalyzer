@@ -1,0 +1,19 @@
+package com.example.PortoQuant.analyticalModels;
+
+public class TimeVaryingVolitality implements volitalityModel {
+
+	double []volitality;
+	
+	
+	public TimeVaryingVolitality(double[] volitality) {
+		super();
+		this.volitality = volitality;
+	}
+
+	@Override
+	public double getValue(int timeStep) {
+		// TODO Auto-generated method stub
+		return volitality[timeStep];
+	}
+
+}

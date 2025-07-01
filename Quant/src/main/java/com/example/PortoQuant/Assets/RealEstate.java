@@ -12,13 +12,13 @@ public class RealEstate extends Asset{
 	ArrayList<String> RealEstate;
 
 	@Override
-	void calculateExpectedReturn() {
+	public void calculateExpectedReturn() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	void calculateVolatility() {
+	public void calculateVolatility() {
 		// TODO Auto-generated method stub
 		
 	}

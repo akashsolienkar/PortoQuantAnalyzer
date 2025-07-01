@@ -3,9 +3,10 @@ package com.example.PortoQuant.Assets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.PortoQuant.HistoricalData.MarketDataSerivce;
+import com.example.PortoQuant.GarchModel.GarchModel;
+import com.example.PortoQuant.HistoricalData.StockDataSerivce;
+import com.example.PortoQuant.analyticalModels.TimeVaryingVolitality;
 
-import com.example.PortoQuant.calculations.returnEstimations.StockReturnEstimator;
 
 public class Stocks extends Asset{
 
@@ -17,20 +18,27 @@ public class Stocks extends Asset{
 	}
 
 	ArrayList<String> stocks;
-	double Mu;
-	double Sigma;
+	
 
 	@Override
-	void calculateExpectedReturn() {
+	public void calculateExpectedReturn() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	void calculateVolatility() {
+	public void calculateVolatility() {
 		// TODO Auto-generated method stub
 //		
-//		MarketDataSerivce service = new MarketDataSerivce();
+		StockDataSerivce service = new StockDataSerivce();
+		try {
+			List<Double> prices = service.fetchDailyPrices("IBM", "s");
+		this.setVolatility(new TimeVaryingVolitality(GarchModel.getInstance().runGarch(prices)));
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //
 //		for (String asset : stocks) {
 //		    try {
@@ -55,6 +63,7 @@ public class Stocks extends Asset{
 		Stocks s= new Stocks(100);
 		s.stocks.add("AAPL");
 		s.calculateVolatility();
+		System.out.println(s.getVolatility().getValue(0));
 		
 				
 	}

@@ -1,11 +1,13 @@
 package com.example.PortoQuant.analyticalModels;
 
+import java.util.List;
+
 public class TimeVaryingVolitality implements volitalityModel {
 
-	double []volitality;
+	List<Double> volitality;
 	
 	
-	public TimeVaryingVolitality(double[] volitality) {
+	public TimeVaryingVolitality(List<Double> volitality) {
 		super();
 		this.volitality = volitality;
 	}
@@ -13,7 +15,8 @@ public class TimeVaryingVolitality implements volitalityModel {
 	@Override
 	public double getValue(int timeStep) {
 		// TODO Auto-generated method stub
-		return volitality[timeStep];
+		return timeStep>=volitality.size()?volitality.get(volitality.size()-1):volitality.get(timeStep);
+		
 	}
 
 }
