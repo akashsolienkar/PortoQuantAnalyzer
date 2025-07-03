@@ -1,5 +1,6 @@
-package com.example.PortoQuant.Executor;
+package com.example.portoquant.executor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,59 +9,76 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.example.PortoQuant.Assets.Asset;
-import com.example.PortoQuant.DataModels.Portfolio;
-import com.example.PortoQuant.Simulation.MultiGBMSimulation;
+import com.example.portoquant.datamodels.Portfolio;
+import com.example.portoquant.simulation.GBMSimulator;
+import com.example.portoquant.simulation.MultiMonteCarloSimulation;
+import com.example.portoquant.assets.Asset;
 
+/**
+ * Executes Monte Carlo simulations for a given portfolio using
+ * multi-asset Geometric Brownian Motion (GBM) models.
+ * <p>
+ * Uses a fixed thread pool equal to the number of assets for parallel execution.
+ * Each asset simulation returns an array of simulated final prices for the specified paths.
+ * Aggregates all asset final prices for each simulation path to compute portfolio-level outcomes.
+ * </p>
+ * <p>
+ * Computes risk metrics such as Value at Risk (VaR) based on simulation results.
+ * 
+ * 
+ * @author akashsolienkar
+ */
+public class QuantExecutor {
 
-public class QuantExecutor
-{
+    /**
+     * Runs Monte Carlo simulations for all assets in the portfolio.
+     * 
+     * @param p the portfolio containing assets and simulation parameters
+     * @throws InterruptedException if thread execution is interrupted
+     * @throws ExecutionException if simulation task execution fails
+     */
+    public void runSimulations(Portfolio p) throws InterruptedException, ExecutionException {
+        ExecutorService executor = Executors.newFixedThreadPool(p.getAssets().size());
+        MultiMonteCarloSimulation simulator = new MultiMonteCarloSimulation();
+      
+        int numPaths = p.getNumberOfSimulations(); // Total simulation paths
+        int steps = 252;                            // Trading days in a year
 
-	public void runSimulations(Portfolio p) throws InterruptedException, ExecutionException
-	{
-		ExecutorService s=Executors.newFixedThreadPool(p.getAssets().size());
-		MultiGBMSimulation simulator = new MultiGBMSimulation();
-		int numPaths = p.getNumberOfSimulations();              // Total number of simulation paths
-        int steps = 252;                     // Time steps (252 trading days in a year)
- 
-        Map<Asset,Future<double[]>> futureAsset = new ConcurrentHashMap<>();
-        
-		for(Asset asset : p.getAssets())
-		{
-			asset.calculateVolatility();
-			asset.calculateExpectedReturn();
-			futureAsset.put(asset,
-					s.submit(()->
-					simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1)));
-//			s.submit(()->simulator.simulate(numPaths, steps, asset.getTotalPrice(), asset.getExpectedReturn(), asset.getVolatility(), 1));
-		}
-		
-		
-		 double[] finalPortfolioValues = new double[p.getNumberOfSimulations()];
-//		 Map<Asset,Future<double[]>> assetListOutcomes = new ConcurrentHashMap<>();
+        Map<Asset, Future<double[]>> futureAsset = new ConcurrentHashMap<>();
 
-		 long start = System.currentTimeMillis();
-	        for (int i = 0; i < p.getNumberOfSimulations(); i++) 
-	        {
-	            double total = 0.0;
+        for (Asset asset : p.getAssets()) {
+            asset.calculateVolatility();
+            asset.calculateExpectedReturn();
+            Map<String,Object> params= new HashMap<>();
+            params.put("steps", steps);
+            params.put("initialPrice", asset.getTotalPrice());
+            params.put("mu", asset.getExpectedReturn());
+            params.put("sigma", asset.getVolatility());
+            params.put("timeHorizon", 1.0);
+            futureAsset.put(asset,
+                executor.submit(() ->
+                    simulator.simulate(numPaths,new GBMSimulator(),params)));
+        }
 
-	            for (Entry<Asset, Future<double[]>> asset : futureAsset.entrySet()) {
-	                double finalPrice = asset.getValue().get()[i];
-//	                double shares = asset.getKey().getTotalPrice() / p.getTotalValue();
-	                total +=  finalPrice;
-	                
-//	                System.out.println("finalPrice -"+finalPrice);
-//	                System.out.println("shares-"+shares);
-//	                System.out.println("total-"+total);
-	            }
+        double[] finalPortfolioValues = new double[numPaths];
 
-	            finalPortfolioValues[i]=total;
-	        }
-	        
-	        simulator.computeRiskMetrics(finalPortfolioValues, 0.95, p.getTotalValue());
-	        System.out.printf("\n Executed %,d GBM for portfolio in %.2f seconds%n", numPaths, (System.currentTimeMillis() - start) / 1000.0);
-		
-		s.shutdown();
-		
-	}	
+        long start = System.currentTimeMillis();
+
+        for (int i = 0; i < numPaths; i++) {
+            double total = 0.0;
+            for (Entry<Asset, Future<double[]>> assetEntry : futureAsset.entrySet()) {
+                double finalPrice = assetEntry.getValue().get()[i];
+                total += finalPrice;
+            }
+            finalPortfolioValues[i] = total;
+        }
+
+        GBMSimulator sim= new GBMSimulator();
+        sim.computeRiskMetrics(finalPortfolioValues, 0.95, p.getTotalValue());
+
+        System.out.printf("\nExecuted %,d GBM simulations for portfolio in %.2f seconds%n", numPaths,
+                (System.currentTimeMillis() - start) / 1000.0);
+
+        executor.shutdown();
+    }
 }

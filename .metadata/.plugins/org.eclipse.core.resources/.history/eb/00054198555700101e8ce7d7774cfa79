@@ -1,0 +1,46 @@
+package com.example.portoquant.executor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import com.example.portoquant.datamodels.Portfolio;
+import com.example.portoquant.analyticalmodels.ConstantExpectedReturnModel;
+import com.example.portoquant.analyticalmodels.ConstantVolatilityModel;
+import com.example.portoquant.assets.Asset;
+import com.example.portoquant.assets.MutualFunds;
+import com.example.portoquant.assets.Stocks;
+
+/**
+ * Main application entry point to run portfolio simulations.
+ * <p>
+ * Creates assets with constant expected return and volatility models,
+ * builds a portfolio, and executes Monte Carlo simulations via QuantExecutor.
+ * </p>
+ * 
+ * @author akashsolienkar
+ */
+public class MainApplication {
+
+    public static void main(String[] args) {
+        QuantExecutor quantExecutor = new QuantExecutor();
+        List<Asset> assets = new ArrayList<>();
+        
+        assets.add(new Stocks(10000, (new ArrayList<String>({"IBM"}))));
+        assets.add(new MutualFunds(10000));
+        
+        assets.get(0).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+        assets.get(0).setVolatility(new ConstantVolatilityModel(0.8));
+        
+        assets.get(1).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+        assets.get(1).setVolatility(new ConstantVolatilityModel(0.8));
+        
+        Portfolio portfolio = new Portfolio(20000, 1, 1_000_000, assets);
+        
+        try {
+            quantExecutor.runSimulations(portfolio);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,9 +1,11 @@
-package com.example.PortoQuant.calculations.returnEstimations;
+package com.example.portoquant.calculations.returnestimations;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.PortoQuant.Assets.Asset.AssetType;
+import com.example.portoquant.assets.Asset.AssetType;
+
+
 /**
  * Utility class to estimate expected return (mu) and volatility (sigma)
  * from historical price data using either log or simple returns.
@@ -33,7 +35,7 @@ public class BondsReturnEstimator {
             if (pYesterday == 0) continue;
 
             double r;
-            if (type == com.example.PortoQuant.Assets.Asset.AssetType.BOND || type == com.example.PortoQuant.Assets.Asset.AssetType.CASH) {
+            if (type == com.example.portoquant.assets.Asset.AssetType.BOND || type == com.example.portoquant.assets.Asset.AssetType.CASH) {
                 // Use simple returns for bonds/cash
                 r = (pToday - pYesterday) / pYesterday;
             } else {

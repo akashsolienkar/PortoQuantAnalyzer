@@ -1,0 +1,57 @@
+package com.example.PortoQuant.calculations.returnEstimations;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Estimates annualized return (μ) and volatility (σ) for stocks
+ * using historical daily prices and log return model.
+ */
+public class StockReturnEstimator {
+
+    private static final int TRADING_DAYS_PER_YEAR = 252;
+
+    /**
+     * Estimates μ and σ using log returns from historical prices.
+     *
+     * @param prices List of historical daily stock prices
+     * @return double[] { μ_annualized, σ_annualized }
+     */
+    public static double[] estimateMuAndSigma(List<Double> prices) {
+        if (prices == null || prices.size() < 2) {
+            return new double[]{0.0, 0.0};
+        }
+
+        List<Double> logReturns = new ArrayList<>();
+
+        for (int i = 1; i < prices.size(); i++) {
+            double prev = prices.get(i - 1);
+            double curr = prices.get(i);
+
+            if (prev <= 0 || curr <= 0) continue;
+
+            double logReturn = Math.log(curr / prev);
+            logReturns.add(logReturn);
+        }
+
+        if (logReturns.isEmpty()) return new double[]{0.0, 0.0};
+
+        // Mean (μ_daily)
+        double sum = 0.0;
+        for (double r : logReturns) sum += r;
+        double meanDaily = sum / logReturns.size();
+
+        // Std Dev (σ_daily)
+        double variance = 0.0;
+        for (double r : logReturns) {
+            variance += Math.pow(r - meanDaily, 2);
+        }
+        double stdDevDaily = Math.sqrt(variance / logReturns.size());
+
+        // Annualize μ and σ
+        double muAnnual = meanDaily * TRADING_DAYS_PER_YEAR;
+        double sigmaAnnual = stdDevDaily * Math.sqrt(TRADING_DAYS_PER_YEAR);
+
+        return new double[]{muAnnual, sigmaAnnual};
+    }
+}

@@ -1,0 +1,10 @@
+package com.example.portoquant.Simulation;
+
+/**
+ * Functional interface for a stochastic price path generator.
+ */
+@FunctionalInterface
+public interface SimulationRunner
+{
+	    double[] generate();
+}

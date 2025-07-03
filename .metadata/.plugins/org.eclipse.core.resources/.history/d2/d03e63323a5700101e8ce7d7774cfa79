@@ -1,0 +1,29 @@
+package com.example.portoquant.QuantExecutor;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import com.example.portoquant.datamodels.Portfolio;
+
+import com.example.portoquant.assets.Asset;
+
+/**
+ * Executes Monte Carlo simulations for a given portfolio using
+ * multi-asset Geometric Brownian Motion (GBM) models.
+ * <p>
+ * Utilizes a fixed thread pool to run parallel simulations for each asset.
+ * Aggregates simulated final asset prices to compute portfolio level risk metrics.
+ * </p>
+ * 
+ * <p>
+ * Throws InterruptedException and ExecutionException if simulation threads are interrupted or fail.
+ * </p>
+ * 
+ * @author akashsolienkar
+ */
+public class QuantExecutor

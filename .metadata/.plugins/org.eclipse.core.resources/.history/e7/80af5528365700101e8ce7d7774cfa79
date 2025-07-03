@@ -1,0 +1,36 @@
+package com.example.PortoQuant.analyticalModels;
+
+/**
+ * A constant expected return model used for financial simulations.
+ * 
+ * This model assumes a fixed expected return (μ) across all time steps,
+ * typically used for simple Monte Carlo or GBM simulations where returns are static.
+ * 
+ * Implements the ExpectedReturnModel interface to allow polymorphic behavior
+ * across different return estimation strategies (e.g., dynamic, GARCH-based).
+ */
+public class ConstantExpectedReturnModel implements ExpectedReturnModel {
+
+    // The constant expected return (μ), expressed annually
+    private final double expectedReturn;
+
+    /**
+     * Constructs a ConstantExpectedReturnModel with a fixed expected return value.
+     *
+     * @param expectedReturn the annualized expected return to be returned at every time step
+     */
+    public ConstantExpectedReturnModel(double expectedReturn) {
+        this.expectedReturn = expectedReturn;
+    }
+
+    /**
+     * Returns the same expected return value regardless of the time step.
+     *
+     * @param timeStep the simulation step index (ignored in this model)
+     * @return the constant expected return value
+     */
+    @Override
+    public double getValue(int timeStep) {
+        return expectedReturn;
+    }
+}

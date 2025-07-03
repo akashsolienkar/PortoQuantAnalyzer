@@ -1,0 +1,73 @@
+package com.example.portoquant.Simulation;
+import java.util.Map;
+import java.util.Random;
+
+/**
+ * Utility class to simulate Geometric Brownian Motion (GBM) paths for asset prices.
+ * <p>
+ * GBM models asset prices with the formula:
+ * S(t+1) = S(t) * exp[(μ - 0.5 * σ²) * Δt + σ * sqrt(Δt) * Z]
+ * where Z is a standard normal random variable.
+ * </p>
+ * 
+ * Author: akashsolienkar
+ */
+public class GBMSimulator implements SimulationRunner {
+
+    private final Random random;
+
+    /**
+     * Constructs a GBMSimulator with a random seed.
+     */
+    public GBMSimulator() {
+        this.random = new Random();
+    }
+
+    /**
+     * Constructs a GBMSimulator with a specific seed for reproducibility.
+     * 
+     * @param seed random seed
+     */
+    public GBMSimulator(long seed) {
+        this.random = new Random(seed);
+    }
+
+    /**
+     * Simulates a single GBM price path.
+     * 
+     * @param steps number of time steps
+     * @param initialPrice starting price of the asset
+     * @param mu expected return (annualized)
+     * @param sigma volatility (annualized)
+     * @param timeHorizon time horizon in years (e.g., 1.0 for one year)
+     * @return array of simulated prices, length = steps + 1
+     */
+    	@Override
+	public double generate(Map<String,Object> params) 
+    	{
+    		int steps =(int) params.get("steps"); 
+    		double initialPrice=(double) params.get("initialPrice");
+    		double mu=(double) params.get("mu");
+    		double sigma =(double) params.get("sigma");
+    		double timeHorizon =(double) params.get("timeHorizon");
+		
+    		 double[] prices = new double[steps + 1];
+    	        prices[0] = initialPrice;
+
+    	        double dt = timeHorizon / steps;
+
+    	        for (int i = 1; i <= steps; i++) {
+//    	            double z = random.nextGaussian(); // Standard normal
+//    	            double drift = (mu - 0.5 * sigma * sigma) * dt;
+//    	            double diffusion = sigma * Math.sqrt(dt) * z;
+    	            
+                    double z = rand.nextGaussian(); // Random shock
+//                  // Apply GBM step
+                  value *= Math.exp((mu.getValue(i) - 0.5 * sigma.getValue(i) * sigma.getValue(i)) * dt + sigma.getValue(i) * Math.sqrt(dt) * z);
+
+    	            prices[i] = prices[i - 1] * Math.exp(drift + diffusion);
+    	        }
+
+    	        return prices;
+	}
+}

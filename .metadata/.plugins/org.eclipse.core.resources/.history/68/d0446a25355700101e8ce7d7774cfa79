@@ -1,0 +1,70 @@
+package com.example.PortoQuant.Assets;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.PortoQuant.GarchModel.GarchModel;
+import com.example.PortoQuant.HistoricalData.StockDataSerivce;
+import com.example.PortoQuant.analyticalModels.TimeVaryingVolitality;
+
+
+public class Stocks extends Asset{
+
+	public Stocks(double price) {
+		super(Asset.AssetType.STOCK.toString(), Asset.AssetType.STOCK);
+		// TODO Auto-generated constructor stub
+		this.setTotalPrice(price);
+		stocks= new ArrayList<String>();
+	}
+
+	ArrayList<String> stocks;
+	
+
+	@Override
+	public void calculateExpectedReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calculateVolatility() {
+		// TODO Auto-generated method stub
+//		
+		StockDataSerivce service = new StockDataSerivce();
+		try {
+			List<Double> prices = service.fetchDailyPrices("IBM", "s");
+		this.setVolatility(new TimeVaryingVolitality(GarchModel.getInstance().runGarch(prices)));
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//
+//		for (String asset : stocks) {
+//		    try {
+//				List<Double> prices = service.getHistoricalPrices(asset, 1);
+//				double[] stats = StockReturnEstimator.estimateMuAndSigma(prices);
+//
+//				setExpectedReturn(stats[0]);
+//			    setVolatility(stats[1]);
+//
+//		    
+//		    } catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} // 1 year back
+
+		    // Estimate μ and σ from prices
+//		    		}
+	}
+
+	public static void main(String args[])
+	{
+		Stocks s= new Stocks(100);
+		s.stocks.add("AAPL");
+		s.calculateVolatility();
+		System.out.println(s.getVolatility().getValue(0));
+		
+				
+	}
+}

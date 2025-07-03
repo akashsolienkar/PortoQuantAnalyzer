@@ -1,0 +1,43 @@
+package com.example.PortoQuant.analyticalModels;
+
+import java.util.List;
+
+/**
+ * A volatility model that provides time-varying volatility values.
+ * <p>
+ * This model allows the volatility to change at each simulation step,
+ * based on a predefined list of values. If the requested time step
+ * exceeds the provided range, the last known volatility is returned.
+ * </p>
+ * 
+ * Example use case: modeling market conditions where volatility is not constant.
+ * 
+ * @author akashsolienkar
+ */
+public class TimeVaryingVolatility implements VolatilityModel {
+
+    private final List<Double> volatility;
+
+    /**
+     * Constructs a time-varying volatility model with a predefined list of volatility values.
+     *
+     * @param volatility the list of volatility values to be used across time steps
+     */
+    public TimeVaryingVolatility(List<Double> volatility) {
+        this.volatility = volatility;
+    }
+
+    /**
+     * Returns the volatility at the given time step.
+     * If the time step exceeds the list size, the last available value is returned.
+     *
+     * @param timeStep the simulation step for which to fetch volatility
+     * @return the volatility value at the given step
+     */
+    @Override
+    public double getVolatility(int timeStep) {
+        return (timeStep >= volatility.size())
+                ? volatility.get(volatility.size() - 1)
+                : volatility.get(timeStep);
+    }
+}

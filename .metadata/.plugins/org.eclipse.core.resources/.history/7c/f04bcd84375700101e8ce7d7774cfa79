@@ -1,0 +1,26 @@
+package com.example.PortoQuant.assets;
+
+import java.util.ArrayList;
+
+public class RealEstate extends Asset{
+
+	public RealEstate(double price) {
+		super(Asset.AssetType.REAL_ESTATE.toString(), Asset.AssetType.REAL_ESTATE);
+		// TODO Auto-generated constructor stub
+	}
+
+	ArrayList<String> RealEstate;
+
+	@Override
+	public void calculateExpectedReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calculateVolatility() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

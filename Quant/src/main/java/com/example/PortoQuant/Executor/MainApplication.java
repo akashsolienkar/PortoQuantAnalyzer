@@ -1,37 +1,48 @@
-package com.example.PortoQuant.Executor;
+package com.example.portoquant.executor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import com.example.PortoQuant.Assets.Asset;
-import com.example.PortoQuant.Assets.MutualFunds;
-import com.example.PortoQuant.Assets.Stocks;
-import com.example.PortoQuant.DataModels.Portfolio;
-import com.example.PortoQuant.analyticalModels.ConstantExpectedReturnModel;
-import com.example.PortoQuant.analyticalModels.ContstantVoliatlityModel;
+import com.example.portoquant.datamodels.Portfolio;
+import com.example.portoquant.analyticalmodels.ConstantExpectedReturnModel;
+import com.example.portoquant.analyticalmodels.ConstantVolatilityModel;
+import com.example.portoquant.assets.Asset;
+import com.example.portoquant.assets.MutualFunds;
+import com.example.portoquant.assets.Stocks;
 
-public class MainApplication 
-{
-	public static void main(String[] args) 
-	{
-		QuantExecutor Q=new QuantExecutor();
-		List<Asset> assets= new ArrayList<Asset>();
-		assets.add(new Stocks(10000));
-		assets.add(new MutualFunds(10000));
-		assets.get(0).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
-		assets.get(0).setVolatility(new ContstantVoliatlityModel(0.8));
-		assets.get(1).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
-		assets.get(1).setVolatility(new ContstantVoliatlityModel(0.8));
-		Portfolio p=new Portfolio(20000, 1, 1000000, assets);
-		try {
-			Q.runSimulations(p);
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
+/**
+ * Main application entry point to run portfolio simulations.
+ * <p>
+ * Creates assets with constant expected return and volatility models,
+ * builds a portfolio, and executes Monte Carlo simulations via QuantExecutor.
+ * </p>
+ * 
+ * @author akashsolienkar
+ */
+public class MainApplication {
 
-
+    public static void main(String[] args) {
+        QuantExecutor quantExecutor = new QuantExecutor();
+        List<Asset> assets = new ArrayList<>();
+        
+         ArrayList<String> stock=new ArrayList<String>();
+         stock.add("IBM");
+        assets.add(new Stocks(10000,stock));
+        assets.add(new MutualFunds(10000));
+        
+        assets.get(0).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+        assets.get(0).setVolatility(new ConstantVolatilityModel(0.8));
+        
+        assets.get(1).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+        assets.get(1).setVolatility(new ConstantVolatilityModel(0.8));
+        
+        Portfolio portfolio = new Portfolio(20000, 1, 1_000_000, assets);
+        
+        try {
+            quantExecutor.runSimulations(portfolio);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
 }

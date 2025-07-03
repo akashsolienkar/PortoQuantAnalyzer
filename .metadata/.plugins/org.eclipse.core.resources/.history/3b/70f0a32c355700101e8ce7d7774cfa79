@@ -1,0 +1,86 @@
+package com.example.PortoQuant.Assets;
+
+import com.example.portoquant.analyticalmodels.ExpectedReturnModel;
+import com.example.portoquant.analyticalmodels.volitalityModel;
+
+public abstract class Asset {
+
+
+	public static enum AssetType {
+	    STOCK,
+	    BOND,
+	    CASH,
+	    MUTUAL_FUND,
+	    COMMODITY,
+	    REAL_ESTATE,
+	    CRYPTO
+	}
+
+    private String name;                // e.g., "Apple", "Bitcoin"
+    private AssetType type;
+    private double totalPrice;
+    private double allocation; //Weight          // % of portfolio (e.g., 0.25 = 25%)
+    private ExpectedReturnModel expectedReturn;//Mu      // Annual expected return (e.g., 0.08 = 8%)
+    private volitalityModel volatility; //Sigma          // Std. dev. of returns (e.g., 0.2 = 20%)
+    
+    
+    public abstract void calculateExpectedReturn();
+    public abstract void calculateVolatility();
+    
+    
+    
+    
+    public Asset(String name, AssetType type) {
+		super();
+		this.name = name;
+		this.type = type;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public double getTotalPrice() {
+		return totalPrice;
+	}
+	public void setTotalPrice(double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+	public AssetType getType() {
+		return type;
+	}
+	public void setType(AssetType type) {
+		this.type = type;
+	}
+	public double getAllocation() {
+		return allocation;
+	}
+	public void setAllocation(double allocation) {
+		this.allocation = allocation;
+	}
+	public ExpectedReturnModel getExpectedReturn() {
+		return expectedReturn;
+	}
+	public void setExpectedReturn(ExpectedReturnModel expectedReturn) {
+		this.expectedReturn = expectedReturn;
+	}
+	public volitalityModel getVolatility() {
+		return volatility;
+	}
+	public void setVolatility(volitalityModel volatility) {
+		this.volatility = volatility;
+	}
+	
+	@Override
+    public String toString() {
+        return "Asset{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", allocation=" + allocation +
+                ", expectedReturn=" + expectedReturn +
+                ", volatility=" + volatility +
+                '}';
+    }
+}

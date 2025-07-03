@@ -1,0 +1,41 @@
+package com.example.PortoQuant.analyticalmodels;
+
+/**
+ * A model that provides a constant expected return value across all time steps.
+ * <p>
+ * This is often used in simulations where a fixed average return is assumed
+ * for a financial asset or portfolio.
+ * </p>
+ * 
+ * Example use case: constant-drift Monte Carlo simulations.
+ * 
+ * @author akashsolienkar
+ */
+public class ConstantExpectedReturnModel implements ExpectedReturnModel {
+
+    /**
+     * The fixed expected return used across all time steps.
+     */
+    private final double expectedReturn;
+
+    /**
+     * Constructs a model that returns the same expected return for any time step.
+     *
+     * @param expectedReturn the constant expected return value
+     */
+    public ConstantExpectedReturnModel(double expectedReturn) {
+        this.expectedReturn = expectedReturn;
+    }
+
+    /**
+     * Returns the expected return for the given time step.
+     * Always returns the same constant value.
+     *
+     * @param timeStep the simulation step (ignored)
+     * @return the constant expected return
+     */
+    @Override
+    public double getValue(int timeStep) {
+        return expectedReturn;
+    }
+}

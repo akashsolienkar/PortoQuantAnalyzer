@@ -1,31 +1,45 @@
-package com.example.PortoQuant.Assets;
+package com.example.portoquant.assets;
 
 import java.util.ArrayList;
 
-public class Bonds extends Asset{
+/**
+ * Represents a bond asset with price and related financial calculations.
+ * <p>
+ * Extends the abstract {@link Asset} class, specializing for bonds.
+ * </p>
+ * 
+ * @author akashsolienkar
+ */
+public class Bonds extends Asset {
 
-	public Bonds(double price) {
-		super(Asset.AssetType.BOND.toString(), Asset.AssetType.BOND);
-		this.setTotalPrice(price);
-		// TODO Auto-generated constructor stub
-	}
+    private ArrayList<String> bonds;
 
-	ArrayList<String> bonds;
-	
-	
+    /**
+     * Constructs a Bonds asset with the specified total price.
+     * Initializes asset type as BOND.
+     * 
+     * @param price the total price of the bond asset
+     */
+    public Bonds(double price) {
+        super(Asset.AssetType.BOND.toString(), Asset.AssetType.BOND);
+        this.setTotalPrice(price);
+    }
 
-	@Override
-	public
-	void calculateExpectedReturn() {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Calculates the expected return for this bond asset.
+     * Implementation pending.
+     */
+    @Override
+    public void calculateExpectedReturn() {
+        // TODO: implement calculation logic
+    }
 
-	@Override
-	public
-	void calculateVolatility() {
-		// TODO Auto-generated method stub
-		
-	}
-	
+    /**
+     * Calculates the volatility for this bond asset.
+     * Implementation pending.
+     */
+    @Override
+    public void calculateVolatility() {
+        // TODO: implement calculation logic
+    }
 }

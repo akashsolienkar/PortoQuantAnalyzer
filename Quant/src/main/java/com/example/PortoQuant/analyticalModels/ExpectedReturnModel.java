@@ -1,6 +1,23 @@
-package com.example.PortoQuant.analyticalModels;
+package com.example.portoquant.analyticalmodels;
 
+/**
+ * Interface representing a model used to estimate the expected return 
+ * of a financial asset or portfolio at a given time step.
+ * <p>
+ * Implementations of this interface can provide various strategies for computing
+ * expected returns—such as constant return, historical averages, or 
+ * regression-based forecasts.
+ * </p>
+ * 
+ * @author akashsolienkar
+ */
 public interface ExpectedReturnModel {
 
-	double getValue(int timeStep);  
+    /**
+     * Returns the expected return value at the specified time step.
+     *
+     * @param timeStep the discrete time step for which the expected return is requested
+     * @return the expected return value for the given time step
+     */
+    double getValue(int timeStep);
 }

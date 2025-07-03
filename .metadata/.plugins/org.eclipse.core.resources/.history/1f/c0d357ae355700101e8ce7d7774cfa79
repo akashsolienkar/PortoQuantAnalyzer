@@ -1,0 +1,23 @@
+package com.example.portoquant.analytics.model;
+
+/**
+ * Strategy interface for estimating the expected return of a
+ * financial asset or portfolio at a discrete time step.
+ * <p>
+ * Implementations can range from simple constant‑return models
+ * to more sophisticated forecasts driven by historical data,
+ * factor models, or machine‑learning regressions.
+ * </p>
+ *
+ * @author akashsolienkar
+ */
+public interface ExpectedReturnModel {
+
+    /**
+     * Computes the expected return for the specified time step.
+     *
+     * @param timeStep the zero‑based index of the simulation step
+     * @return the expected return for that step
+     */
+    double getExpectedReturn(int timeStep);
+}

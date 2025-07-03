@@ -1,4 +1,4 @@
-package com.example.PortoQuant.calculations.returnEstimations;
+package com.example.portoquant.calculations.returnestimations;
 
 import java.util.ArrayList;
 import java.util.List;

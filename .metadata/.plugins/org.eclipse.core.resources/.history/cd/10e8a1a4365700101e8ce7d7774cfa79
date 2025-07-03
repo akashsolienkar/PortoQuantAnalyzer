@@ -1,0 +1,37 @@
+package com.example.PortoQuant.Executor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import com.example.PortoQuant.DataModels.Portfolio;
+import com.example.PortoQuant.analyticalmodels.ConstantExpectedReturnModel;
+import com.example.PortoQuant.analyticalmodels.ContstantVoliatlityModel;
+import com.example.portoquant.Assets.Asset;
+import com.example.portoquant.Assets.MutualFunds;
+import com.example.portoquant.Assets.Stocks;
+
+public class MainApplication 
+{
+	public static void main(String[] args) 
+	{
+		QuantExecutor Q=new QuantExecutor();
+		List<Asset> assets= new ArrayList<Asset>();
+		assets.add(new Stocks(10000));
+		assets.add(new MutualFunds(10000));
+		assets.get(0).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+		assets.get(0).setVolatility(new ContstantVoliatlityModel(0.8));
+		assets.get(1).setExpectedReturn(new ConstantExpectedReturnModel(0.2));
+		assets.get(1).setVolatility(new ContstantVoliatlityModel(0.8));
+		Portfolio p=new Portfolio(20000, 1, 1000000, assets);
+		try {
+			Q.runSimulations(p);
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+
+
+}

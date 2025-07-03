@@ -1,0 +1,47 @@
+package com.example.PortoQuant.DataModels;
+import java.util.List;
+
+import com.example.PortoQuant.Assets.Asset;
+
+public class Portfolio {
+
+    private double totalValue;              // e.g., ₹1 Cr = 1_00_00_000
+    private int years;                      // Time horizon for simulation
+    private int numberOfSimulations;
+    SimulationResult simulationResult;
+    private List<Asset> assets;             // List of all assets in the portfolio
+
+    public Portfolio(double totalValue, int years, int numberOfSimulations, List<Asset> assets) {
+        this.totalValue = totalValue;
+        this.years = years;
+        this.numberOfSimulations = numberOfSimulations;
+        this.assets = assets;
+        
+    }
+
+    public double getTotalValue() {
+        return totalValue;
+    }
+
+    public int getYears() {
+        return years;
+    }
+
+    public int getNumberOfSimulations() {
+        return numberOfSimulations;
+    }
+
+    public List<Asset> getAssets() {
+        return assets;
+    }
+
+    @Override
+    public String toString() {
+        return "Portfolio{" +
+                "totalValue=" + totalValue +
+                ", years=" + years +
+                ", numberOfSimulations=" + numberOfSimulations +
+                ", assets=" + assets +
+                '}';
+    }
+}

@@ -1,0 +1,13 @@
+package com.example.portoquant.Simulation;
+
+import java.util.HashMap;
+
+/**
+ * Functional interface for a stochastic price path generator.
+ */
+@FunctionalInterface
+public interface SimulationRunner
+{
+	    double[] generate(HashMap<String,Object> params);
+	    int steps, double initialPrice, double mu, double sigma, double timeHorizon
+}
